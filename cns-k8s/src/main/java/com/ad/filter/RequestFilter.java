@@ -3,10 +3,12 @@ package com.ad.filter;
 import com.ad.util.TestThreadLocalUtil;
 
 import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Date;
 
+@WebFilter
 public class RequestFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig)  {
