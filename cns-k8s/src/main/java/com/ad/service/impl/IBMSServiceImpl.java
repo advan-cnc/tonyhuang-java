@@ -2,6 +2,7 @@ package com.ad.service.impl;
 
 import com.ad.entity.MachineDTO;
 import com.ad.entity.MachineJsonTemplate;
+import com.ad.entity.MachineTagMap;
 import com.ad.service.IBMSService;
 import com.ad.util.ExcelReaderUtil;
 import com.alibaba.fastjson.JSONArray;
@@ -63,11 +64,8 @@ public class IBMSServiceImpl implements IBMSService {
     public void createMachine(String targetMachineType,Integer parentId, String topoName) throws IOException {
         System.out.println("start createMachine ...");
         //读取文件
-        Resource resource = new ClassPathResource("/ibms_config.xlsx");
-        InputStream is = resource.getInputStream();
-        final Workbook sheets = ExcelReaderUtil.getWorkbook(is, XLSX);
-        System.out.println(sheets);
-        List<MachineDTO> machineDTOList =  ExcelReaderUtil.parseDeviceConfigSheet(sheets,targetMachineType);
+        List<MachineDTO> machineDTOList =  ExcelReaderUtil.parseDeviceConfigSheet(targetMachineType);
+        System.out.println("设备类型【" + targetMachineType + "】有【" + machineDTOList.size() + "】台设备");
         final JSONObject machineJsonTemplate = MachineJsonTemplate.getMachineJsonTemplate();
         //设置共有属性
         final JSONObject initialProperty = machineJsonTemplate.getJSONObject("initialProperty");
@@ -79,15 +77,25 @@ public class IBMSServiceImpl implements IBMSService {
         iotSense.put("deviceName",deviceName);
         iotSense.put("deviceType",deviceType);
         for (MachineDTO machineDTO:machineDTOList){
-            machineJsonTemplate.put("name",machineDTO.getName());
+            final String machineName = machineDTO.getName();
+            machineJsonTemplate.put("name", machineName);
             machineJsonTemplate.put("parentId",parentId);
             machineJsonTemplate.put("topoName",topoName);
             machineJsonTemplate.put("modelId",machineDTO.getModelId());
             //绑定tag
             final JSONArray monitor = machineJsonTemplate.getJSONObject("initialFeature").getJSONArray("monitor");
-            System.out.println("设备："+ machineDTO.getName() + "的initialFeature是" + monitor);
-            System.out.println("设备："+ machineDTO.getName() + "的machineJsonTemplate是" + machineJsonTemplate);
-
+//            System.out.println("设备："+ machineName + "的initialFeature是" + monitor);
+//            System.out.println("设备："+ machineName + "的machineJsonTemplate是" + machineJsonTemplate);
+            final List<String> tagList = MachineTagMap.getTagList(machineDTO.getType());
+            for(String tag:tagList){
+                JSONObject tagObj = new JSONObject();
+                String tagStr = type + "@" + groupId + "@" + machineName + ":" + tag;
+                tagObj.put("tag", tagStr);
+                tagObj.put("name", tag);
+                tagObj.put("description", "");
+                monitor.add(tagObj);
+            }
+            System.out.println("设备：" +  machineName + "的machineJsonTemplate= " + machineJsonTemplate.toJSONString());
         }
     }
 }

@@ -20,4 +20,8 @@ public class MachineTagMap {
             map.put(type,tags);
         }
     }
+
+    public static List<String> getTagList(String type){
+        return map.get(type);
+    }
 }

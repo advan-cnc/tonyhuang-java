@@ -16,7 +16,7 @@ public class MachineJsonTemplate {
         rtv.put("initialProperty",initialProperty);
         JSONObject initialFeature = initialFeature();
         rtv.put("initialFeature",initialFeature);
-        return null;
+        return rtv;
     }
 
     private static JSONObject initialProperty(){
