@@ -24,4 +24,12 @@ public class MachineTagMap {
     public static List<String> getTagList(String type){
         return map.get(type);
     }
+
+    public static int getCount(){
+        return map.size();
+    }
+
+    public static Map<String, List<String>> getMap(){
+        return map;
+    }
 }

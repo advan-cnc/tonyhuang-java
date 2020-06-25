@@ -6,7 +6,7 @@ public interface IBMSService {
     /**
      * 根据ibms_config.xml创建profile
      */
-    void initProfile();
+    void initProfile() throws Exception;
 
     /**
      * 根据ibms_config.xml创建topo
@@ -15,5 +15,5 @@ public interface IBMSService {
     /**
      * 根据ibms_config.xml创建设备
      */
-    void createMachine(String targetMachineType,Integer parentId, String topoName) throws IOException;
+    void createMachine(String targetMachineType,Integer parentId, String topoName) throws Exception;
 }

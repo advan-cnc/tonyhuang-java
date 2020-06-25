@@ -8,15 +8,8 @@ public class MachineUtil {
     private static final Map<String,Integer> machineTypeModel =
             new HashMap<>();
     static {
-        machineTypeModel.put("",0);
-        machineTypeModel.put("",0);
-        machineTypeModel.put("",0);
-        machineTypeModel.put("",0);
-        machineTypeModel.put("",0);
-        machineTypeModel.put("",0);
-        machineTypeModel.put("",0);
-        machineTypeModel.put("",0);
-        machineTypeModel.put("",0);
+        machineTypeModel.put("KACO",6);
+        machineTypeModel.put("GENO",7);
     }
 
 

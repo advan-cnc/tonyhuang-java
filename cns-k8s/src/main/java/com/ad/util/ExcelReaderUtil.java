@@ -2,12 +2,16 @@ package com.ad.util;
 
 import ch.qos.logback.classic.Logger;
 import com.ad.entity.MachineDTO;
+import com.ad.entity.MachineTagMap;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +22,23 @@ import java.util.List;
 public class ExcelReaderUtil {
     public static final String XLS = "xls";
     public static final String XLSX = "xlsx";
+    private static Workbook sheets;
+
+    static {
+        Resource resource = new ClassPathResource("/ibms_config.xlsx");
+        InputStream is = null;
+        try {
+            is = resource.getInputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            sheets = getWorkbook(is, XLSX);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * 根据文件后缀名类型获取对应的工作簿对象
      * @param inputStream 读取文件的输入流
@@ -35,17 +56,15 @@ public class ExcelReaderUtil {
         return workbook;
     }
 
-    public static void parseTagConfigSheet(Workbook workbook){
-        Sheet tagConfig =  workbook.getSheet("tag_config");
+    public static void parseTagConfigSheet(){
+        System.out.println("parseTagConfigSheet start...");
+        Sheet tagConfig =  sheets.getSheet("tag_config");
         if(tagConfig == null){
             throw new IllegalArgumentException("tag_config sheet 不存在！！！");
         }
         // 获取第一行数据
+        check(tagConfig);
         int firstRowNum = tagConfig.getFirstRowNum();
-        Row firstRow = tagConfig.getRow(firstRowNum);
-        if (null == firstRow) {
-            System.out.println("解析Excel失败，在第一行没有读取到任何数据！");
-        }
         // 解析每一行的数据，构造数据对象
         int rowStart = firstRowNum + 1;
         int rowEnd = tagConfig.getPhysicalNumberOfRows();
@@ -54,25 +73,52 @@ public class ExcelReaderUtil {
             if (null == row) {
                 continue;
             }
+            final short firstCellNum = row.getFirstCellNum();
+            final short lastCellNum = row.getLastCellNum();
+            String type = "";
+            String tag;
+            for(int i=firstCellNum;i<=lastCellNum;i++){
+                final Cell cell1 = row.getCell(i);
+                final String value = convertCellValueToString(cell1);
+                if(i==1){
+                    type = value;
+                }
+                if(i==2){
+                    tag = value;
+                    if (StringUtils.isEmpty(type)){
+                        throw new IllegalArgumentException("tag_config sheet DeviceType 存在空行");
+                    }
 
+                    MachineTagMap.init(type,tag);
+                    break;
+                }
+            }
+        }
+        System.out.println("parseTagConfigSheet end...");
+        System.out.println("总共统计到设备类型：" + MachineTagMap.getCount());
+    }
+
+
+    private static void check(Sheet sheet){
+        int firstRowNum = sheet.getFirstRowNum();
+        Row firstRow = sheet.getRow(firstRowNum);
+        if (null == firstRow) {
+            System.out.println("解析Excel失败，在第一行没有读取到任何数据！");
         }
     }
 
-    public static List<MachineDTO> parseDeviceConfigSheet(Workbook workbook, String targetMachineType){
+    public static List<MachineDTO> parseDeviceConfigSheet(String targetMachineType){
         List<MachineDTO> rtv = new ArrayList<>();
         // 解析sheet
-        Sheet deviceConfig =  workbook.getSheet("device_config");
+        Sheet deviceConfig =  sheets.getSheet("device_config");
         if(deviceConfig == null){
             throw new IllegalArgumentException("device_config sheet 不存在！！！");
         }
         // 获取第一行数据
-        int firstRowNum = deviceConfig.getFirstRowNum();
-        Row firstRow = deviceConfig.getRow(firstRowNum);
-        if (null == firstRow) {
-            System.out.println("解析Excel失败，在第一行没有读取到任何数据！");
-        }
+        check(deviceConfig);
 
         // 解析每一行的数据，构造数据对象
+        int firstRowNum = deviceConfig.getFirstRowNum();
         int rowStart = firstRowNum + 1;
         int rowEnd = deviceConfig.getPhysicalNumberOfRows();
         for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
@@ -153,7 +199,7 @@ public class ExcelReaderUtil {
         for(int i=firstCellNum;i<=lastCellNum;i++){
             final Cell cell1 = row.getCell(i);
             final String value = convertCellValueToString(cell1);
-            System.out.println("第" + rowNum +"行，第"+ i+"格子，值为"+ value);
+//            System.out.println("第" + rowNum +"行，第"+ i+"格子，值为"+ value);
             if(i==1){
                 machineDTO.setName(value);
             }
