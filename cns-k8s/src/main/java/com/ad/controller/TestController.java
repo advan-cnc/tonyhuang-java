@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
+
+
     @GetMapping("/hello")
     public String test(){
-        System.out.println("TestController test");
-        System.out.println(TestThreadLocalUtil.get());
+//        System.out.println("TestController test");
+//        System.out.println(TestThreadLocalUtil.get());
         return "hello helm";
     }
 
