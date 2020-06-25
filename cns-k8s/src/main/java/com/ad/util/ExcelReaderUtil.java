@@ -1,6 +1,7 @@
 package com.ad.util;
 
 import ch.qos.logback.classic.Logger;
+import com.ad.entity.MachineDTO;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -11,6 +12,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExcelReaderUtil {
     public static final String XLS = "xls";
@@ -37,7 +40,8 @@ public class ExcelReaderUtil {
      * @param workbook Excel工作簿对象
      * @return 解析结果
      */
-    public static void parseExcel(Workbook workbook) {
+    public static List<MachineDTO> parseExcel(Workbook workbook, String targetMachineType) {
+        List<MachineDTO> rtv = new ArrayList<>();
         // 解析sheet
         for (int sheetNum = 0; sheetNum < workbook.getNumberOfSheets(); sheetNum++) {
             Sheet sheet = workbook.getSheetAt(sheetNum);
@@ -46,7 +50,12 @@ public class ExcelReaderUtil {
             if (sheet == null) {
                 continue;
             }
-
+            final String sheetName = sheet.getSheetName();
+            System.out.println("#####开始解析sheet" + sheetName);
+            if (!"device_config".equals(sheetName)){
+                System.out.println("暂时先不解析非device_config的sheet");
+                continue;
+            }
             // 获取第一行数据
             int firstRowNum = sheet.getFirstRowNum();
             Row firstRow = sheet.getRow(firstRowNum);
@@ -62,11 +71,22 @@ public class ExcelReaderUtil {
                 if (null == row) {
                     continue;
                 }
-                convertRowToData(row,rowNum);
-
+                MachineDTO machineDTO = convertRowToData(row,rowNum);
+                //找到该设备的profileID
+                final String type = machineDTO.getType();
+                if(!targetMachineType.equalsIgnoreCase(type)){
+                    System.out.println(type + "为非指定的" + targetMachineType+"类型不处理");
+                    continue;
+                }
+                final Integer modelId = MachineUtil.getModelId(type);
+                if(modelId == null){
+                    throw new IllegalArgumentException("设备类型" + type +"没有创建profile");
+                }
+                machineDTO.setModelId(modelId.intValue());
+                rtv.add(machineDTO);
             }
         }
-
+        return rtv;
     }
 
     /**
@@ -116,15 +136,23 @@ public class ExcelReaderUtil {
      * @param row 行数据
      * @return 解析后的行数据对象，行数据错误时返回null
      */
-    public static void convertRowToData(Row row,int rowNum) {
+    public static MachineDTO convertRowToData(Row row, int rowNum) {
 
         final short firstCellNum = row.getFirstCellNum();
         final short lastCellNum = row.getLastCellNum();
+        final MachineDTO machineDTO = new MachineDTO();
         for(int i=firstCellNum;i<=lastCellNum;i++){
             final Cell cell1 = row.getCell(i);
             final String value = convertCellValueToString(cell1);
             System.out.println("第" + rowNum +"行，第"+ i+"格子，值为"+ value);
+            if(i==1){
+                machineDTO.setName(value);
+            }
+            if(i==2){
+                machineDTO.setType(value);
+            }
         }
 
+        return machineDTO;
     }
 }
