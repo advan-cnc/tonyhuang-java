@@ -32,5 +32,6 @@ public class IBMSServiceImpl implements IBMSService {
         InputStream is = resource.getInputStream();
         final Workbook sheets = ExcelReaderUtil.getWorkbook(is, XLSX);
         System.out.println(sheets);
+        ExcelReaderUtil.parseExcel(sheets);
     }
 }
