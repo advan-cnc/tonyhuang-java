@@ -35,59 +35,68 @@ public class ExcelReaderUtil {
         return workbook;
     }
 
-    /**
-     * 解析Excel数据
-     * @param workbook Excel工作簿对象
-     * @return 解析结果
-     */
-    public static List<MachineDTO> parseExcel(Workbook workbook, String targetMachineType) {
+    public static void parseTagConfigSheet(Workbook workbook){
+        Sheet tagConfig =  workbook.getSheet("tag_config");
+        if(tagConfig == null){
+            throw new IllegalArgumentException("tag_config sheet 不存在！！！");
+        }
+        // 获取第一行数据
+        int firstRowNum = tagConfig.getFirstRowNum();
+        Row firstRow = tagConfig.getRow(firstRowNum);
+        if (null == firstRow) {
+            System.out.println("解析Excel失败，在第一行没有读取到任何数据！");
+        }
+        // 解析每一行的数据，构造数据对象
+        int rowStart = firstRowNum + 1;
+        int rowEnd = tagConfig.getPhysicalNumberOfRows();
+        for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
+            Row row = tagConfig.getRow(rowNum);
+            if (null == row) {
+                continue;
+            }
+
+        }
+    }
+
+    public static List<MachineDTO> parseDeviceConfigSheet(Workbook workbook, String targetMachineType){
         List<MachineDTO> rtv = new ArrayList<>();
         // 解析sheet
-        for (int sheetNum = 0; sheetNum < workbook.getNumberOfSheets(); sheetNum++) {
-            Sheet sheet = workbook.getSheetAt(sheetNum);
+        Sheet deviceConfig =  workbook.getSheet("device_config");
+        if(deviceConfig == null){
+            throw new IllegalArgumentException("device_config sheet 不存在！！！");
+        }
+        // 获取第一行数据
+        int firstRowNum = deviceConfig.getFirstRowNum();
+        Row firstRow = deviceConfig.getRow(firstRowNum);
+        if (null == firstRow) {
+            System.out.println("解析Excel失败，在第一行没有读取到任何数据！");
+        }
 
-            // 校验sheet是否合法
-            if (sheet == null) {
+        // 解析每一行的数据，构造数据对象
+        int rowStart = firstRowNum + 1;
+        int rowEnd = deviceConfig.getPhysicalNumberOfRows();
+        for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
+            Row row = deviceConfig.getRow(rowNum);
+            if (null == row) {
                 continue;
             }
-            final String sheetName = sheet.getSheetName();
-            System.out.println("#####开始解析sheet" + sheetName);
-            if (!"device_config".equals(sheetName)){
-                System.out.println("暂时先不解析非device_config的sheet");
+            MachineDTO machineDTO = convertRowToData(row,rowNum);
+            //找到该设备的profileID
+            final String type = machineDTO.getType();
+            if(!targetMachineType.equalsIgnoreCase(type)){
+                System.out.println(type + "为非指定的" + targetMachineType+"类型不处理");
                 continue;
             }
-            // 获取第一行数据
-            int firstRowNum = sheet.getFirstRowNum();
-            Row firstRow = sheet.getRow(firstRowNum);
-            if (null == firstRow) {
-                System.out.println("解析Excel失败，在第一行没有读取到任何数据！");
+            final Integer modelId = MachineUtil.getModelId(type);
+            if(modelId == null){
+                throw new IllegalArgumentException("设备类型" + type +"没有创建profile");
             }
-
-            // 解析每一行的数据，构造数据对象
-            int rowStart = firstRowNum + 1;
-            int rowEnd = sheet.getPhysicalNumberOfRows();
-            for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
-                Row row = sheet.getRow(rowNum);
-                if (null == row) {
-                    continue;
-                }
-                MachineDTO machineDTO = convertRowToData(row,rowNum);
-                //找到该设备的profileID
-                final String type = machineDTO.getType();
-                if(!targetMachineType.equalsIgnoreCase(type)){
-                    System.out.println(type + "为非指定的" + targetMachineType+"类型不处理");
-                    continue;
-                }
-                final Integer modelId = MachineUtil.getModelId(type);
-                if(modelId == null){
-                    throw new IllegalArgumentException("设备类型" + type +"没有创建profile");
-                }
-                machineDTO.setModelId(modelId.intValue());
-                rtv.add(machineDTO);
-            }
+            machineDTO.setModelId(modelId.intValue());
+            rtv.add(machineDTO);
         }
         return rtv;
     }
+
 
     /**
      * 将单元格内容转换为字符串
