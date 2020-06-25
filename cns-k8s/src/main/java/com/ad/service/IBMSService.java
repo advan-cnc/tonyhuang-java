@@ -15,5 +15,5 @@ public interface IBMSService {
     /**
      * 根据ibms_config.xml创建设备
      */
-    void createMachine() throws IOException;
+    void createMachine(String targetMachineType,Integer parentId, String topoName) throws IOException;
 }
