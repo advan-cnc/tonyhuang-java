@@ -89,4 +89,8 @@ public class MachineUtil {
     public static Integer getModelId(String machineType){
         return machineTypeModel.get(machineType);
     }
+
+    public static void setModelId(String type, Integer modelId){
+        machineTypeModel.put(type,modelId);
+    }
 }

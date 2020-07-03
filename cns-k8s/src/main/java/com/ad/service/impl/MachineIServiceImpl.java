@@ -1,7 +1,9 @@
 package com.ad.service.impl;
 
+import com.ad.entity.ResultBody;
 import com.ad.service.ProfileIService;
 import com.ad.util.APMClientUtil;
+import com.ad.util.MachineUtil;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ public class MachineIServiceImpl implements ProfileIService<JSONObject> {
     @Override
     public void createProfile(JSONObject param) throws Exception {
         String apmURl = apmProtocol + apmHost + addProfilePath;
-        APMClientUtil.sendPostRequestToAPM(apmURl, param, JSONObject.class);
+        final ResultBody<?> resultBody = APMClientUtil.sendPostRequestToAPM(apmURl, param, JSONObject.class);
+        final JSONObject data = (JSONObject)resultBody.getData();
+        final Integer profileId = data.getInteger("id");
+        MachineUtil.setModelId(param.getString("name"), profileId);
     }
 }
