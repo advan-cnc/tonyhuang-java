@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 @RestController
 @RequestMapping("/ibms")
@@ -15,10 +16,11 @@ public class IMBSController {
     @PostMapping("/create/topo")
     public String createIBMSTopoInfo(@RequestParam("targetMachineType") String targetMachineType,
                                      @RequestParam("parentId") Integer parentId,
-                                     @RequestParam("topoName") String topoName
+                                     @RequestParam("topoName") String topoName,
+                                     @RequestParam("floor") String floor
                                      ) throws Exception {
         ibmsService.createTopo();
-        ibmsService.createMachine(targetMachineType,parentId,topoName);
+        ibmsService.createMachine(targetMachineType,parentId,topoName, floor);
         return "OK";
     }
 
