@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ExcelReaderUtil {
     public static final String XLS = "xls";
@@ -107,7 +108,7 @@ public class ExcelReaderUtil {
         }
     }
 
-    public static List<MachineDTO> parseDeviceConfigSheet(String targetMachineType){
+    public static List<MachineDTO> parseDeviceConfigSheet(String targetMachineType, String topoName,String floor){
         List<MachineDTO> rtv = new ArrayList<>();
         // 解析sheet
         Sheet deviceConfig =  sheets.getSheet("device_config");
@@ -126,7 +127,10 @@ public class ExcelReaderUtil {
             if (null == row) {
                 continue;
             }
-            MachineDTO machineDTO = convertRowToData(row,rowNum);
+            MachineDTO machineDTO = convertRowToData(row,rowNum,topoName,floor);
+            if(Objects.isNull(machineDTO)){
+                continue;
+            }
             //找到该设备的profileID
             final String type = machineDTO.getType();
             if(!targetMachineType.equalsIgnoreCase(type)){
@@ -191,22 +195,42 @@ public class ExcelReaderUtil {
      * @param row 行数据
      * @return 解析后的行数据对象，行数据错误时返回null
      */
-    public static MachineDTO convertRowToData(Row row, int rowNum) {
+    public static MachineDTO convertRowToData(Row row, int rowNum, String topoName,String floor) {
 
-        final short firstCellNum = row.getFirstCellNum();
-        final short lastCellNum = row.getLastCellNum();
+//        final short firstCellNum = row.getFirstCellNum();
+//        final short lastCellNum = row.getLastCellNum();
         final MachineDTO machineDTO = new MachineDTO();
-        for(int i=firstCellNum;i<=lastCellNum;i++){
-            final Cell cell1 = row.getCell(i);
-            final String value = convertCellValueToString(cell1);
-//            System.out.println("第" + rowNum +"行，第"+ i+"格子，值为"+ value);
-            if(i==1){
-                machineDTO.setName(value);
-            }
-            if(i==2){
-                machineDTO.setType(value);
-            }
+
+        String thisTopoName = convertCellValueToString(row.getCell(0));
+        String name = convertCellValueToString(row.getCell(1));
+        String type = convertCellValueToString(row.getCell(2));
+        String thisFloor = convertCellValueToString(row.getCell(3));
+        System.out.println("第[" + rowNum + "]行数据：system=" + thisTopoName + ",name=" + name+ ",type=" + type+ ",floor=" + thisFloor);
+        if (topoName.equals(thisTopoName) && floor.equals(thisFloor)){
+            machineDTO.setName(name);
+            machineDTO.setType(type);
+        }else {
+            System.out.println("第[" + rowNum + "]行数据未匹配上");
+            return null;
         }
+//        for(int i=firstCellNum;i<=lastCellNum;i++){
+//            final Cell cell1 = row.getCell(i);
+//            final String value = convertCellValueToString(cell1);
+//
+//
+//            if(i==0){ //系统
+//                machineDTO.setName(value);
+//            }
+//            if(i==1){ //name
+//                machineDTO.setName(value);
+//            }
+//            if(i==2){ //type
+//                machineDTO.setType(value);
+//            }
+//            if(i==3){ //floor
+//                machineDTO.setType(value);
+//            }
+//        }
 
         return machineDTO;
     }
