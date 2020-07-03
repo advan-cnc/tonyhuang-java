@@ -60,7 +60,7 @@ public class IBMSServiceImpl implements IBMSService {
     private MachineIServiceImpl machineIService;
 
     @Override
-    public void initProfile(boolean ifNeedCreationMonitor) throws Exception {
+    public synchronized void  initProfile(boolean ifNeedCreationMonitor) throws Exception {
         System.out.println("initProfile...");
         //创建monitor
         //[{"kind":"monitor","name":"AHU1:AM","description":"手自動模式","type":"monitor","item":[]}]
@@ -99,15 +99,17 @@ public class IBMSServiceImpl implements IBMSService {
         final Map<String, Set<String>> machineCategoryAndMachineTypeMap = getMachineCategoryAndMachineTypeMap();
         final Set<Map.Entry<String, Set<String>>> entries = machineCategoryAndMachineTypeMap.entrySet();
         final Iterator<Map.Entry<String, Set<String>>> iterator = entries.iterator();
+        int count = 0;
         while (iterator.hasNext()){
             final Map.Entry<String, Set<String>> next = iterator.next();
             final String category = next.getKey();
             final Set<String> types = next.getValue();
             for(String machineType: types){
                 createMachineProfile(category,machineType);
+                count++;
             }
         }
-
+        System.out.println("创建设备profile完毕，成功创建设备profile【" + count + "】个！");
     }
 
     private void createMachineProfile(String category,String machineType) throws Exception {
