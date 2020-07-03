@@ -130,16 +130,13 @@ public class ExcelReaderUtil {
             if (null == row) {
                 continue;
             }
-            MachineDTO machineDTO = convertRowToData(row,rowNum,topoName,floor);
+            //只转换那些符合条件的行
+            MachineDTO machineDTO = convertRowToData(row,rowNum,topoName,floor,targetMachineType);
             if(Objects.isNull(machineDTO)){
                 continue;
             }
             //找到该设备的profileID
             final String type = machineDTO.getType();
-            if(!targetMachineType.equalsIgnoreCase(type)){
-                System.out.println(type + "为非指定的" + targetMachineType+"类型不处理");
-                continue;
-            }
             final Integer modelId = MachineUtil.getModelId(type);
             if(modelId == null){
                 throw new IllegalArgumentException("设备类型" + type +"没有创建profile");
@@ -198,7 +195,7 @@ public class ExcelReaderUtil {
      * @param row 行数据
      * @return 解析后的行数据对象，行数据错误时返回null
      */
-    public static MachineDTO convertRowToData(Row row, int rowNum, String topoName,String floor) {
+    public static MachineDTO convertRowToData(Row row, int rowNum, String topoName,String floor,String type) {
 
 //        final short firstCellNum = row.getFirstCellNum();
 //        final short lastCellNum = row.getLastCellNum();
@@ -206,12 +203,13 @@ public class ExcelReaderUtil {
 
         String thisTopoName = convertCellValueToString(row.getCell(0));
         String name = convertCellValueToString(row.getCell(1));
-        String type = convertCellValueToString(row.getCell(2));
+        String thisType = convertCellValueToString(row.getCell(2));
         String thisFloor = convertCellValueToString(row.getCell(3));
         System.out.println("第[" + rowNum + "]行数据：system=" + thisTopoName + ",name=" + name+ ",type=" + type+ ",floor=" + thisFloor);
-        if (topoName.equals(thisTopoName) && floor.equals(thisFloor)){
+        if (topoName.equals(thisTopoName) && floor.equals(thisFloor) && thisType.equals(type)){
             machineDTO.setName(name);
             machineDTO.setType(type);
+            machineDTO.setCategory(thisTopoName);
         }else {
             System.out.println("第[" + rowNum + "]行数据未匹配上");
             return null;

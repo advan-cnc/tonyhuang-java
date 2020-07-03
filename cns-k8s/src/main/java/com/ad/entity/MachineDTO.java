@@ -4,6 +4,7 @@ public class MachineDTO {
     private String name;
     private String type;
     private int modelId;
+    private String category;
 
     public MachineDTO() {
     }
@@ -11,6 +12,14 @@ public class MachineDTO {
     public MachineDTO(String name, String type) {
         this.name = name;
         this.type = type;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getName() {

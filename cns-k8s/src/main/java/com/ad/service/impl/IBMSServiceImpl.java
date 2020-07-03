@@ -11,12 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static com.ad.entity.MachineTagAndCategoryMap.getMachineCategoryAndMachineTypeMap;
+import static com.ad.entity.MachineTagAndCategoryMap.*;
 import static com.ad.util.APMClientUtil.sendPostRequestToAPM;
 
 
@@ -95,10 +92,29 @@ public class IBMSServiceImpl implements IBMSService {
     /**
      * 创建指定大类的所有设备的profile
      */
-    private void createProfilesInCategory() {
+    private void createProfilesInCategory() throws Exception {
         final Map<String, Set<String>> machineCategoryAndMachineTypeMap = getMachineCategoryAndMachineTypeMap();
+        final Set<Map.Entry<String, Set<String>>> entries = machineCategoryAndMachineTypeMap.entrySet();
+        final Iterator<Map.Entry<String, Set<String>>> iterator = entries.iterator();
+        while (iterator.hasNext()){
+            final Map.Entry<String, Set<String>> next = iterator.next();
+            final String category = next.getKey();
+            final Set<String> types = next.getValue();
+            for(String machineType: types){
+                createMachineProfile(category, machineType);
+            }
+        }
 
     }
+
+    private void createMachineProfile(String category, String machineType) throws Exception {
+        final List<String> tagList = getTagList(machineType);
+        JSONObject profileParam = new JSONObject();
+//        profileParam.put("name", );
+        machineIService.createProfile(profileParam);
+
+    }
+
 
     @Override
     public void createTopo() {
