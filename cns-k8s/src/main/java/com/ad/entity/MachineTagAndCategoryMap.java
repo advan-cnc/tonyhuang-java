@@ -7,22 +7,15 @@ import java.util.*;
  */
 public class MachineTagAndCategoryMap {
     private static final Map<String, List<String>> machineTypeAndTagListMap = new HashMap<>();
-    private static final Map<String, Set<String>> machineCategoryAndMachineTypeMap = new HashMap<>();
+    private static final Map<String, Set<MachineDTO>> machineCategoryAndMachineTypeMap = new HashMap<>();
 
     /**
      *
      * @param type 设备类型名字
      * @param tagName tag名字
      */
-    public static void init(String category, String type, String tagName){
-        //处理MachineCategoryAndMachineTypeMap
-        if (machineCategoryAndMachineTypeMap.containsKey(category)){
-            machineCategoryAndMachineTypeMap.get(category).add(type);
-        }else {
-            Set<String> machineTypes = new HashSet<>();
-            machineTypes.add(type);
-            machineCategoryAndMachineTypeMap.put(category, machineTypes);
-        }
+    public static void initMachineTypeAndTagListMap(String type, String tagName){
+
         //处理machineTypeAndTagListMap
         if(machineTypeAndTagListMap.containsKey(type)){
             final List<String> tags = machineTypeAndTagListMap.get(type);
@@ -33,6 +26,19 @@ public class MachineTagAndCategoryMap {
             List<String> tags = new ArrayList<>();
             tags.add(tagName);
             machineTypeAndTagListMap.put(type,tags);
+        }
+    }
+
+
+    public static void initMachineCategoryAndMachineTypeMap(MachineDTO machineDTO){
+        //处理MachineCategoryAndMachineTypeMap
+        String category = machineDTO.getCategory();
+        if (machineCategoryAndMachineTypeMap.containsKey(category)){
+            machineCategoryAndMachineTypeMap.get(category).add(machineDTO);
+        }else {
+            Set<MachineDTO> machineTypes = new HashSet<>();
+            machineTypes.add(machineDTO);
+            machineCategoryAndMachineTypeMap.put(category, machineTypes);
         }
     }
 
@@ -48,21 +54,9 @@ public class MachineTagAndCategoryMap {
         return machineTypeAndTagListMap;
     }
 
-    public static Map<String, Set<String>> getMachineCategoryAndMachineTypeMap(){
+    public static Map<String, Set<MachineDTO>> getMachineCategoryAndMachineTypeMap(){
         return machineCategoryAndMachineTypeMap;
     }
 
-    public static Optional<String> getCategory(String type){
-        Optional<String> rtv = Optional.empty();
-        final Set<Map.Entry<String, Set<String>>> entries = machineCategoryAndMachineTypeMap.entrySet();
-        final Iterator<Map.Entry<String, Set<String>>> iterator = entries.iterator();
-        while (iterator.hasNext()){
-            final Map.Entry<String, Set<String>> next = iterator.next();
-            if(next.getValue().contains(type)){
-                rtv = Optional.of(next.getKey());
-                return rtv;
-            }
-        }
-        return rtv;
-    }
+
 }

@@ -1,5 +1,7 @@
 package com.ad.entity;
 
+import java.util.Objects;
+
 public class MachineDTO {
     private String name;
     private String type;
@@ -44,5 +46,20 @@ public class MachineDTO {
 
     public void setModelId(int modelId) {
         this.modelId = modelId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MachineDTO that = (MachineDTO) o;
+        return Objects.equals(name, that.name) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(category, that.category);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, type, category);
     }
 }

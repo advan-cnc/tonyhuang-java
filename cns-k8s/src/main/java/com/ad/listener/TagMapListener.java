@@ -13,5 +13,6 @@ public class TagMapListener implements ApplicationListener<ContextRefreshedEvent
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         ExcelReaderUtil.parseTagConfigSheet();
+        ExcelReaderUtil.parseDeviceConfigSheet();
     }
 }
