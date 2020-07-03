@@ -10,6 +10,7 @@ server:
 apm:
   protocol: https://
   host: portal-apm-ibms-eks005.bm.wise-paas.com.cn
+  version: APM 2.5.0
   machine:
     create-machine-path: /api-apm/topo/node
     add-profile-path: /api-apm/digital-twin/model

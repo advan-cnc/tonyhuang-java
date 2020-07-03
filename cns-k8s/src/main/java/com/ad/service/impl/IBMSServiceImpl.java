@@ -52,6 +52,9 @@ public class IBMSServiceImpl implements IBMSService {
     @Value("${apm.machine.property-path}")
     private String propertyPath;
 
+    @Value("${apm.version}")
+    private String apmVersion;
+
 
     @Autowired
     private MachineIServiceImpl machineIService;
