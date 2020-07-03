@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.ad.util.APMClientUtil.sendPostRequestToAPM;
+
 
 @Service
 public class IBMSServiceImpl implements IBMSService {
@@ -38,8 +40,8 @@ public class IBMSServiceImpl implements IBMSService {
     @Value("${apm.host}")
     private String apmHost;
 
-    @Value("${apm.machine.create-path}")
-    private String createPath;
+    @Value("${apm.machine.create-machine-path}")
+    private String createMachinePath;
 
     @Value("${ibms.groupId}")
     private String groupId;
@@ -58,6 +60,10 @@ public class IBMSServiceImpl implements IBMSService {
 
     @Value("${ibms.deviceName}")
     private String deviceName;
+
+
+    @Value("${apm.machine.property-path}")
+    private String propertyPath;
 
     @Override
     public void initProfile(boolean ifNeedCreationMonitor) throws Exception {
@@ -83,26 +89,13 @@ public class IBMSServiceImpl implements IBMSService {
                     monitor.put("item",new JSONArray());
                     param.add(monitor);
                 }
-                sendPostRequestToAPM(param, JSONArray.class);
+                String apmURl = apmProtocol + apmHost + propertyPath;
+                sendPostRequestToAPM(apmURl, param, JSONArray.class);
             }
         }
 
         System.out.println("创建monitor成功");
     }
-
-
-    private ResultBody<?> sendPostRequestToAPM(JSON param, Class returnClazz) throws Exception {
-        final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
-        String authorization = request.getHeader("Authorization") == null ? request.getHeader("authorization")
-                : request.getHeader("Authorization");
-        String apmURl = apmProtocol + apmHost + "/api-apm/property";
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.AUTHORIZATION,authorization);
-        httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        return HttpRequestUtils.post(apmURl,httpHeaders,param.toJSONString(),returnClazz);
-    }
-
 
     @Override
     public void createTopo() {
@@ -155,6 +148,7 @@ public class IBMSServiceImpl implements IBMSService {
     private void createMachineToAPM(JSONObject machineJson) throws Exception {
         JSONArray para = new JSONArray();
         para.add(machineJson);
-        sendPostRequestToAPM(para, JSONArray.class);
+        String apmURl = apmProtocol + apmHost + createMachinePath;
+        sendPostRequestToAPM(apmURl, para, JSONArray.class);
     }
 }
