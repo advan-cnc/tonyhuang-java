@@ -93,7 +93,7 @@ public class ExcelReaderUtil {
                 if(i==2){
                     tag = value;
                     if (StringUtils.isEmpty(category) || StringUtils.isEmpty(type)){
-                        throw new IllegalArgumentException("tag_config sheet System or DeviceType 存在空列");
+                        throw new IllegalArgumentException("tag_config sheet System or DeviceType 存在空列,行数为：" + rowNum);
                     }
 
                     MachineTagAndCategoryMap.initMachineTypeAndTagListMap(type, tag);
