@@ -12,6 +12,7 @@ apm:
   host: portal-apm-ibms-eks005.bm.wise-paas.com.cn
   machine:
     create-path: /api-apm/topo/node
+    add-profile-path: /api-apm/digital-twin/model
 ibms:
   groupId: c5785734-7944-450c-a11b-bead55b2c49f
   type: SCADA

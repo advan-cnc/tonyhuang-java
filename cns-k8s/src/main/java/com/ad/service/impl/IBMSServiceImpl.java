@@ -3,9 +3,11 @@ package com.ad.service.impl;
 import com.ad.entity.MachineDTO;
 import com.ad.entity.MachineJsonTemplate;
 import com.ad.entity.MachineTagMap;
+import com.ad.entity.ResultBody;
 import com.ad.service.IBMSService;
 import com.ad.util.ExcelReaderUtil;
 import com.ad.util.HttpRequestUtils;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -87,14 +89,15 @@ public class IBMSServiceImpl implements IBMSService {
                     monitor.put("item",new JSONArray());
                     param.add(monitor);
                 }
-            createTypeMonitors(param);
+                sendPostRequestToAPM(param, JSONArray.class);
             }
         }
 
         System.out.println("创建monitor成功");
     }
 
-    private void createTypeMonitors(JSONArray param) throws Exception {
+
+    private ResultBody<?> sendPostRequestToAPM(JSON param, Class returnClazz) throws Exception {
         final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
         String authorization = request.getHeader("Authorization") == null ? request.getHeader("authorization")
@@ -103,7 +106,7 @@ public class IBMSServiceImpl implements IBMSService {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.AUTHORIZATION,authorization);
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        HttpRequestUtils.post(apmURl,httpHeaders,param.toJSONString(),JSONArray.class);
+        return HttpRequestUtils.post(apmURl,httpHeaders,param.toJSONString(),returnClazz);
     }
 
 
@@ -149,23 +152,25 @@ public class IBMSServiceImpl implements IBMSService {
                 monitor.add(tagObj);
             }
 //            System.out.println("设备：" +  machineName + "的machineJsonTemplate= " + machineJsonTemplate.toJSONString());
-            createMachineToAPM(machineJsonTemplate);
+            JSONArray para = new JSONArray();
+            para.add(machineJsonTemplate);
+            sendPostRequestToAPM(para, JSONArray.class);
             monitor.clear();
             System.out.println("设备：" +  machineName + "添加成功！");
         }
     }
 
-    private void createMachineToAPM(JSONObject machineJson) throws Exception {
-        final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
-        String authorization = request.getHeader("Authorization") == null ? request.getHeader("authorization")
-                : request.getHeader("Authorization");
-        String apmURl = apmProtocol + apmHost + createPath;
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.AUTHORIZATION,authorization);
-        httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        JSONArray para = new JSONArray();
-        para.add(machineJson);
-        HttpRequestUtils.post(apmURl,httpHeaders,para.toJSONString(),JSONArray.class);
-    }
+//    private void createMachineToAPM(JSONObject machineJson) throws Exception {
+//        final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+//        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+//        String authorization = request.getHeader("Authorization") == null ? request.getHeader("authorization")
+//                : request.getHeader("Authorization");
+//        String apmURl = apmProtocol + apmHost + createPath;
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.add(HttpHeaders.AUTHORIZATION,authorization);
+//        httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+//        JSONArray para = new JSONArray();
+//        para.add(machineJson);
+//        HttpRequestUtils.post(apmURl,httpHeaders,para.toJSONString(),JSONArray.class);
+//    }
 }
