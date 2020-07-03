@@ -63,31 +63,34 @@ public class IBMSServiceImpl implements IBMSService {
     private String deviceName;
 
     @Override
-    public void initProfile() throws Exception {
+    public void initProfile(boolean ifNeedCreationMonitor) throws Exception {
         System.out.println("initProfile...");
         //创建monitor
         //[{"kind":"monitor","name":"AHU1:AM","description":"手自動模式","type":"monitor","item":[]}]
         //https://api-apm-apmstage-eks005.bm.wise-paas.com.cn/property
         parseTagConfigSheet();
-//        final Map<String, List<String>> map = MachineTagMap.getMap();
-//        final Set<Map.Entry<String, List<String>>> entrySet = map.entrySet();
-//        final Iterator<Map.Entry<String, List<String>>> iterator = entrySet.iterator();
-//        while (iterator.hasNext()){
-//            final Map.Entry<String, List<String>> next = iterator.next();
-//            final String type = next.getKey();
-//            final List<String> tags = next.getValue();
-//            JSONArray param = new JSONArray();
-//            for(String tag:tags){
-//                JSONObject monitor = new JSONObject();
-//                monitor.put("kind","monitor");
-//                monitor.put("name",type + ":" + tag);
-//                monitor.put("description","monitor");
-//                monitor.put("type","monitor");
-//                monitor.put("item",new JSONArray());
-//                param.add(monitor);
-//            }
-////            createTypeMonitors(param);
-//        }
+        if(ifNeedCreationMonitor){
+            final Map<String, List<String>> map = MachineTagMap.getMap();
+            final Set<Map.Entry<String, List<String>>> entrySet = map.entrySet();
+            final Iterator<Map.Entry<String, List<String>>> iterator = entrySet.iterator();
+            while (iterator.hasNext()){
+                final Map.Entry<String, List<String>> next = iterator.next();
+                final String type = next.getKey();
+                final List<String> tags = next.getValue();
+                JSONArray param = new JSONArray();
+                for(String tag:tags){
+                    JSONObject monitor = new JSONObject();
+                    monitor.put("kind","monitor");
+                    monitor.put("name",type + ":" + tag);
+                    monitor.put("description","monitor");
+                    monitor.put("type","monitor");
+                    monitor.put("item",new JSONArray());
+                    param.add(monitor);
+                }
+            createTypeMonitors(param);
+            }
+        }
+
         System.out.println("创建monitor成功");
     }
 
