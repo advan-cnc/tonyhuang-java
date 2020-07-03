@@ -114,12 +114,7 @@ public class ExcelReaderUtil {
     public static List<MachineDTO> parseDeviceConfigSheet(String targetMachineType, String topoName,String floor){
         List<MachineDTO> rtv = new ArrayList<>();
         // 解析sheet
-        Sheet deviceConfig =  sheets.getSheet("device_config");
-        if(deviceConfig == null){
-            throw new IllegalArgumentException("device_config sheet 不存在！！！");
-        }
-        // 获取第一行数据
-        check(deviceConfig);
+        Sheet deviceConfig = getSheet("device_config");
 
         // 解析每一行的数据，构造数据对象
         int firstRowNum = deviceConfig.getFirstRowNum();
@@ -147,6 +142,41 @@ public class ExcelReaderUtil {
         return rtv;
     }
 
+    private static Sheet getSheet(String name){
+        if(StringUtils.isEmpty(name)){
+            throw new IllegalArgumentException("sheet name is empty");
+        }
+        Sheet sheet =  sheets.getSheet(name);
+        if(sheet == null){
+            throw new IllegalArgumentException("device_config sheet 不存在！！！");
+        }
+        check(sheet);
+        return sheet;
+    }
+    public static void parseDeviceConfigSheet(){
+        // 解析sheet
+        Sheet deviceConfig = getSheet("device_config");
+
+        // 解析每一行的数据，构造数据对象
+        int firstRowNum = deviceConfig.getFirstRowNum();
+        int rowStart = firstRowNum + 1;
+        int rowEnd = deviceConfig.getPhysicalNumberOfRows();
+        for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
+            Row row = deviceConfig.getRow(rowNum);
+            if (null == row) {
+                continue;
+            }
+            //只转换那些符合条件的行
+            MachineDTO machineDTO = convertRowToData(row,rowNum,null,null,null);
+            if(Objects.isNull(machineDTO)){
+                continue;
+            }
+
+
+
+        }
+
+    }
 
     /**
      * 将单元格内容转换为字符串
@@ -197,8 +227,6 @@ public class ExcelReaderUtil {
      */
     public static MachineDTO convertRowToData(Row row, int rowNum, String topoName,String floor,String type) {
 
-//        final short firstCellNum = row.getFirstCellNum();
-//        final short lastCellNum = row.getLastCellNum();
         final MachineDTO machineDTO = new MachineDTO();
 
         String thisTopoName = convertCellValueToString(row.getCell(0));
@@ -214,25 +242,6 @@ public class ExcelReaderUtil {
             System.out.println("第[" + rowNum + "]行数据未匹配上");
             return null;
         }
-//        for(int i=firstCellNum;i<=lastCellNum;i++){
-//            final Cell cell1 = row.getCell(i);
-//            final String value = convertCellValueToString(cell1);
-//
-//
-//            if(i==0){ //系统
-//                machineDTO.setName(value);
-//            }
-//            if(i==1){ //name
-//                machineDTO.setName(value);
-//            }
-//            if(i==2){ //type
-//                machineDTO.setType(value);
-//            }
-//            if(i==3){ //floor
-//                machineDTO.setType(value);
-//            }
-//        }
-
         return machineDTO;
     }
 }
