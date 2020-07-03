@@ -93,7 +93,8 @@ public class ExcelReaderUtil {
                 if(i==2){
                     tag = value;
                     if (StringUtils.isEmpty(category) || StringUtils.isEmpty(type)){
-                        throw new IllegalArgumentException("tag_config sheet System or DeviceType 存在空列,行数为：" + rowNum);
+                        continue;
+//                        throw new IllegalArgumentException("tag_config sheet System or DeviceType 存在空列,行数为：" + rowNum);
                     }
 
                     MachineTagAndCategoryMap.initMachineTypeAndTagListMap(type, tag);
@@ -172,7 +173,8 @@ public class ExcelReaderUtil {
             //只转换那些符合条件的行
             MachineDTO machineDTO = convertRowToData(row,rowNum,null,null,null);
             if(Objects.isNull(machineDTO)){
-                throw new IllegalArgumentException("初始化失败，表格中的device_config sheet的第【"+ rowNum+ "】数据有问题");
+                continue;
+//                throw new IllegalArgumentException("初始化失败，表格中的device_config sheet的第【"+ rowNum+ "】数据有问题");
             }
             initMachineCategoryAndMachineTypeMap(machineDTO.getCategory(),machineDTO.getType());
         }
@@ -232,6 +234,9 @@ public class ExcelReaderUtil {
         final MachineDTO machineDTO = new MachineDTO();
 
         String thisTopoName = convertCellValueToString(row.getCell(0));
+        if(StringUtils.isEmpty(thisTopoName)){
+            return null;
+        }
         String name = convertCellValueToString(row.getCell(1));
         String thisType = convertCellValueToString(row.getCell(2));
         String thisFloor = convertCellValueToString(row.getCell(3));

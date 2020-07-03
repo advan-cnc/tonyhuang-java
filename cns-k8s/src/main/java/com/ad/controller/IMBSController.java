@@ -26,6 +26,7 @@ public class IMBSController {
 
     @GetMapping("/init")
     public String createIBMSTopoInfo(@RequestParam("ifNeedCreationMonitor") boolean ifNeedCreationMonitor) throws Exception {
+        System.out.println("ifNeedCreationMonitor = " + ifNeedCreationMonitor);
         ibmsService.initProfile(ifNeedCreationMonitor);
         return "OK";
     }

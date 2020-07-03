@@ -84,11 +84,13 @@ public class IBMSServiceImpl implements IBMSService {
                     param.add(monitor);
                 }
                 String apmURl = apmProtocol + apmHost + propertyPath;
+                System.out.println("开始创建monitor:" +  param);
                 sendPostRequestToAPM(apmURl, param, JSONArray.class);
             }
         }
+        System.out.println("创建monitor全部成功");
         createProfilesInCategory();
-        System.out.println("创建monitor成功");
+
     }
 
 
