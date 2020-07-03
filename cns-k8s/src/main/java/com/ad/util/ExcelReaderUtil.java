@@ -75,21 +75,25 @@ public class ExcelReaderUtil {
             }
             final short firstCellNum = row.getFirstCellNum();
             final short lastCellNum = row.getLastCellNum();
-            String type = "";
+            String type = null;
             String tag;
+            String category = null;
             for(int i=firstCellNum;i<=lastCellNum;i++){
                 final Cell cell1 = row.getCell(i);
                 final String value = convertCellValueToString(cell1);
+                if(i==0){
+                    category = value;
+                }
                 if(i==1){
                     type = value;
                 }
                 if(i==2){
                     tag = value;
-                    if (StringUtils.isEmpty(type)){
-                        throw new IllegalArgumentException("tag_config sheet DeviceType 存在空行");
+                    if (StringUtils.isEmpty(category) || StringUtils.isEmpty(type)){
+                        throw new IllegalArgumentException("tag_config sheet System or DeviceType 存在空列");
                     }
 
-                    MachineTagAndCategoryMap.init(type,tag);
+                    MachineTagAndCategoryMap.init(category, type, tag);
                     break;
                 }
             }

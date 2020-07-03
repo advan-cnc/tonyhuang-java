@@ -65,7 +65,7 @@ public class IBMSServiceImpl implements IBMSService {
         //[{"kind":"monitor","name":"AHU1:AM","description":"手自動模式","type":"monitor","item":[]}]
         //https://api-apm-apmstage-eks005.bm.wise-paas.com.cn/property
         if(ifNeedCreationMonitor){
-            final Map<String, List<String>> map = MachineTagAndCategoryMap.getMap();
+            final Map<String, List<String>> map = MachineTagAndCategoryMap.getMachineTypeAndTagListMap();
             final Set<Map.Entry<String, List<String>>> entrySet = map.entrySet();
             final Iterator<Map.Entry<String, List<String>>> iterator = entrySet.iterator();
             while (iterator.hasNext()){
