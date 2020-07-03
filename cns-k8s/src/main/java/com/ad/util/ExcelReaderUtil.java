@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.ad.entity.MachineTagAndCategoryMap.getMachineCategoryAndMachineTypeMap;
 import static com.ad.entity.MachineTagAndCategoryMap.initMachineCategoryAndMachineTypeMap;
 
 public class ExcelReaderUtil {
@@ -156,6 +157,7 @@ public class ExcelReaderUtil {
         return sheet;
     }
     public static void parseDeviceConfigSheet(){
+        System.out.println("parseDeviceConfigSheet start ...");
         // 解析sheet
         Sheet deviceConfig = getSheet("device_config");
         // 解析每一行的数据，构造数据对象
@@ -172,8 +174,10 @@ public class ExcelReaderUtil {
             if(Objects.isNull(machineDTO)){
                 throw new IllegalArgumentException("初始化失败，表格中的device_config sheet的第【"+ rowNum+ "】数据有问题");
             }
-            initMachineCategoryAndMachineTypeMap(machineDTO);
+            initMachineCategoryAndMachineTypeMap(machineDTO.getCategory(),machineDTO.getType());
         }
+        System.out.println("parseDeviceConfigSheet end ...");
+        System.out.println("MachineCategoryAndMachineTypeMap = " + getMachineCategoryAndMachineTypeMap());
     }
 
     /**

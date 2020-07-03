@@ -27,5 +27,7 @@ public class MachineIServiceImpl implements ProfileIService<JSONObject> {
         final JSONObject data = (JSONObject)resultBody.getData();
         final Integer profileId = data.getInteger("id");
         MachineUtil.setModelId(param.getString("name"), profileId);
+        System.out.println("常见设备大类：【" + param.getString("category")
+                + "】下的设备类型：【" + param.getString("name") + "】的profile成功");
     }
 }
