@@ -69,25 +69,25 @@ public class IBMSServiceImpl implements IBMSService {
         //[{"kind":"monitor","name":"AHU1:AM","description":"手自動模式","type":"monitor","item":[]}]
         //https://api-apm-apmstage-eks005.bm.wise-paas.com.cn/property
         parseTagConfigSheet();
-        final Map<String, List<String>> map = MachineTagMap.getMap();
-        final Set<Map.Entry<String, List<String>>> entrySet = map.entrySet();
-        final Iterator<Map.Entry<String, List<String>>> iterator = entrySet.iterator();
-        while (iterator.hasNext()){
-            final Map.Entry<String, List<String>> next = iterator.next();
-            final String type = next.getKey();
-            final List<String> tags = next.getValue();
-            JSONArray param = new JSONArray();
-            for(String tag:tags){
-                JSONObject monitor = new JSONObject();
-                monitor.put("kind","monitor");
-                monitor.put("name",type + ":" + tag);
-                monitor.put("description","monitor");
-                monitor.put("type","monitor");
-                monitor.put("item",new JSONArray());
-                param.add(monitor);
-            }
-            createTypeMonitors(param);
-        }
+//        final Map<String, List<String>> map = MachineTagMap.getMap();
+//        final Set<Map.Entry<String, List<String>>> entrySet = map.entrySet();
+//        final Iterator<Map.Entry<String, List<String>>> iterator = entrySet.iterator();
+//        while (iterator.hasNext()){
+//            final Map.Entry<String, List<String>> next = iterator.next();
+//            final String type = next.getKey();
+//            final List<String> tags = next.getValue();
+//            JSONArray param = new JSONArray();
+//            for(String tag:tags){
+//                JSONObject monitor = new JSONObject();
+//                monitor.put("kind","monitor");
+//                monitor.put("name",type + ":" + tag);
+//                monitor.put("description","monitor");
+//                monitor.put("type","monitor");
+//                monitor.put("item",new JSONArray());
+//                param.add(monitor);
+//            }
+////            createTypeMonitors(param);
+//        }
         System.out.println("创建monitor成功");
     }
 
@@ -110,10 +110,10 @@ public class IBMSServiceImpl implements IBMSService {
     }
 
     @Override
-    public void createMachine(String targetMachineType,Integer parentId, String topoName) throws Exception {
+    public void createMachine(String targetMachineType,Integer parentId, String topoName,String floor) throws Exception {
         System.out.println("start createMachine ...");
         //读取文件
-        List<MachineDTO> machineDTOList =  ExcelReaderUtil.parseDeviceConfigSheet(targetMachineType);
+        List<MachineDTO> machineDTOList =  ExcelReaderUtil.parseDeviceConfigSheet(targetMachineType,topoName,floor);
         System.out.println("设备类型【" + targetMachineType + "】有【" + machineDTOList.size() + "】台设备");
         final JSONObject machineJsonTemplate = MachineJsonTemplate.getMachineJsonTemplate();
         //设置共有属性
