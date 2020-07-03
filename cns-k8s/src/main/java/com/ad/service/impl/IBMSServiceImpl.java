@@ -66,7 +66,6 @@ public class IBMSServiceImpl implements IBMSService {
         //创建monitor
         //[{"kind":"monitor","name":"AHU1:AM","description":"手自動模式","type":"monitor","item":[]}]
         //https://api-apm-apmstage-eks005.bm.wise-paas.com.cn/property
-        parseTagConfigSheet();
         if(ifNeedCreationMonitor){
             final Map<String, List<String>> map = MachineTagMap.getMap();
             final Set<Map.Entry<String, List<String>>> entrySet = map.entrySet();
@@ -148,25 +147,15 @@ public class IBMSServiceImpl implements IBMSService {
                 monitor.add(tagObj);
             }
 //            System.out.println("设备：" +  machineName + "的machineJsonTemplate= " + machineJsonTemplate.toJSONString());
-            JSONArray para = new JSONArray();
-            para.add(machineJsonTemplate);
-            sendPostRequestToAPM(para, JSONArray.class);
+            createMachineToAPM(machineJsonTemplate);
             monitor.clear();
             System.out.println("设备：" +  machineName + "添加成功！");
         }
     }
 
-//    private void createMachineToAPM(JSONObject machineJson) throws Exception {
-//        final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-//        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
-//        String authorization = request.getHeader("Authorization") == null ? request.getHeader("authorization")
-//                : request.getHeader("Authorization");
-//        String apmURl = apmProtocol + apmHost + createPath;
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.add(HttpHeaders.AUTHORIZATION,authorization);
-//        httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-//        JSONArray para = new JSONArray();
-//        para.add(machineJson);
-//        HttpRequestUtils.post(apmURl,httpHeaders,para.toJSONString(),JSONArray.class);
-//    }
+    private void createMachineToAPM(JSONObject machineJson) throws Exception {
+        JSONArray para = new JSONArray();
+        para.add(machineJson);
+        sendPostRequestToAPM(para, JSONArray.class);
+    }
 }
