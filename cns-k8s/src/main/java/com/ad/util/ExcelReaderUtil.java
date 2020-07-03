@@ -1,6 +1,5 @@
 package com.ad.util;
 
-import ch.qos.logback.classic.Logger;
 import com.ad.entity.MachineDTO;
 import com.ad.entity.MachineTagMap;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
