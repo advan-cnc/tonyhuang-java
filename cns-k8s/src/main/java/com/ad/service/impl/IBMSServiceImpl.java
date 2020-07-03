@@ -101,18 +101,48 @@ public class IBMSServiceImpl implements IBMSService {
             final String category = next.getKey();
             final Set<String> types = next.getValue();
             for(String machineType: types){
-                createMachineProfile(category, machineType);
+                createMachineProfile(category,machineType);
             }
         }
 
     }
 
-    private void createMachineProfile(String category, String machineType) throws Exception {
+    private void createMachineProfile(String category,String machineType) throws Exception {
         final List<String> tagList = getTagList(machineType);
         JSONObject profileParam = new JSONObject();
-//        profileParam.put("name", );
+        profileParam.put("name", machineType);
+        profileParam.put("type", "machine");
+        profileParam.put("category", category);
+        profileParam.put("description", "des");
+        //可以读取配置项
+        profileParam.put("version", "APM 1.1.55");
+        JSONObject feature = new JSONObject();
+        feature.put("monitor",createMonitor(machineType ,tagList));
+        feature.put("measure",new JSONArray());
+        feature.put("report",new JSONArray());
+        feature.put("alarm",new JSONArray());
+        feature.put("video",new JSONArray());
         machineIService.createProfile(profileParam);
 
+    }
+
+    /**
+     * 创建指定设备类型的
+     * @param type
+     * @param tagList
+     * @return
+     */
+    private JSONArray createMonitor(String type, List<String> tagList) {
+        JSONArray rtv = new JSONArray();
+        tagList.forEach(tag->{
+            JSONObject tagObj = new JSONObject();
+           String t = type + ":" + tag;
+            tagObj.put("name",t);
+            tagObj.put("description","monitor");
+            tagObj.put("tag",t);
+            rtv.add(tagObj);
+        });
+        return rtv;
     }
 
 

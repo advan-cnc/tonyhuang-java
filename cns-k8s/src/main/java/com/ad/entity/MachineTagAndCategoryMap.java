@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class MachineTagAndCategoryMap {
     private static final Map<String, List<String>> machineTypeAndTagListMap = new HashMap<>();
-    private static final Map<String, Set<MachineDTO>> machineCategoryAndMachineTypeMap = new HashMap<>();
+    private static final Map<String, Set<String>> machineCategoryAndMachineTypeMap = new HashMap<>();
 
     /**
      *
@@ -30,14 +30,13 @@ public class MachineTagAndCategoryMap {
     }
 
 
-    public static void initMachineCategoryAndMachineTypeMap(MachineDTO machineDTO){
+    public static void initMachineCategoryAndMachineTypeMap(String category, String machineType){
         //处理MachineCategoryAndMachineTypeMap
-        String category = machineDTO.getCategory();
         if (machineCategoryAndMachineTypeMap.containsKey(category)){
-            machineCategoryAndMachineTypeMap.get(category).add(machineDTO);
+            machineCategoryAndMachineTypeMap.get(category).add(machineType);
         }else {
-            Set<MachineDTO> machineTypes = new HashSet<>();
-            machineTypes.add(machineDTO);
+            Set<String> machineTypes = new HashSet<>();
+            machineTypes.add(machineType);
             machineCategoryAndMachineTypeMap.put(category, machineTypes);
         }
     }
@@ -54,7 +53,7 @@ public class MachineTagAndCategoryMap {
         return machineTypeAndTagListMap;
     }
 
-    public static Map<String, Set<MachineDTO>> getMachineCategoryAndMachineTypeMap(){
+    public static Map<String, Set<String>> getMachineCategoryAndMachineTypeMap(){
         return machineCategoryAndMachineTypeMap;
     }
 
