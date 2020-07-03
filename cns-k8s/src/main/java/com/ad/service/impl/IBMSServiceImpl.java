@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.ad.entity.MachineTagAndCategoryMap.getMachineCategoryAndMachineTypeMap;
 import static com.ad.util.APMClientUtil.sendPostRequestToAPM;
 
 
@@ -86,11 +87,17 @@ public class IBMSServiceImpl implements IBMSService {
                 sendPostRequestToAPM(apmURl, param, JSONArray.class);
             }
         }
-        createProfile();
+        createProfilesInCategory();
         System.out.println("创建monitor成功");
     }
 
-    private void createProfile() {
+
+    /**
+     * 创建指定大类的所有设备的profile
+     */
+    private void createProfilesInCategory() {
+        final Map<String, Set<String>> machineCategoryAndMachineTypeMap = getMachineCategoryAndMachineTypeMap();
+
     }
 
     @Override

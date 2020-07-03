@@ -47,4 +47,22 @@ public class MachineTagAndCategoryMap {
     public static Map<String, List<String>> getMachineTypeAndTagListMap(){
         return machineTypeAndTagListMap;
     }
+
+    public static Map<String, Set<String>> getMachineCategoryAndMachineTypeMap(){
+        return machineCategoryAndMachineTypeMap;
+    }
+
+    public static Optional<String> getCategory(String type){
+        Optional<String> rtv = Optional.empty();
+        final Set<Map.Entry<String, Set<String>>> entries = machineCategoryAndMachineTypeMap.entrySet();
+        final Iterator<Map.Entry<String, Set<String>>> iterator = entries.iterator();
+        while (iterator.hasNext()){
+            final Map.Entry<String, Set<String>> next = iterator.next();
+            if(next.getValue().contains(type)){
+                rtv = Optional.of(next.getKey());
+                return rtv;
+            }
+        }
+        return rtv;
+    }
 }
