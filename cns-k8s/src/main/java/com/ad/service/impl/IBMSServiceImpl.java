@@ -2,26 +2,15 @@ package com.ad.service.impl;
 
 import com.ad.entity.MachineDTO;
 import com.ad.entity.MachineJsonTemplate;
-import com.ad.entity.MachineTagMap;
-import com.ad.entity.ResultBody;
+import com.ad.entity.MachineTagAndCategoryMap;
 import com.ad.service.IBMSService;
 import com.ad.util.ExcelReaderUtil;
-import com.ad.util.HttpRequestUtils;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +54,10 @@ public class IBMSServiceImpl implements IBMSService {
     @Value("${apm.machine.property-path}")
     private String propertyPath;
 
+
+    @Autowired
+    private MachineIServiceImpl machineIService;
+
     @Override
     public void initProfile(boolean ifNeedCreationMonitor) throws Exception {
         System.out.println("initProfile...");
@@ -72,7 +65,7 @@ public class IBMSServiceImpl implements IBMSService {
         //[{"kind":"monitor","name":"AHU1:AM","description":"手自動模式","type":"monitor","item":[]}]
         //https://api-apm-apmstage-eks005.bm.wise-paas.com.cn/property
         if(ifNeedCreationMonitor){
-            final Map<String, List<String>> map = MachineTagMap.getMap();
+            final Map<String, List<String>> map = MachineTagAndCategoryMap.getMap();
             final Set<Map.Entry<String, List<String>>> entrySet = map.entrySet();
             final Iterator<Map.Entry<String, List<String>>> iterator = entrySet.iterator();
             while (iterator.hasNext()){
@@ -93,8 +86,11 @@ public class IBMSServiceImpl implements IBMSService {
                 sendPostRequestToAPM(apmURl, param, JSONArray.class);
             }
         }
-
+        createProfile();
         System.out.println("创建monitor成功");
+    }
+
+    private void createProfile() {
     }
 
     @Override
@@ -129,7 +125,7 @@ public class IBMSServiceImpl implements IBMSService {
             final JSONArray monitor = machineJsonTemplate.getJSONObject("initialFeature").getJSONArray("monitor");
 //            System.out.println("设备："+ machineName + "的initialFeature是" + monitor);
 //            System.out.println("设备："+ machineName + "的machineJsonTemplate是" + machineJsonTemplate);
-            final List<String> tagList = MachineTagMap.getTagList(machineType);
+            final List<String> tagList = MachineTagAndCategoryMap.getTagList(machineType);
             for(String tag:tagList){
                 JSONObject tagObj = new JSONObject();
                 String tagStr = this.type + "@" + groupId + "@" + machineName + ":" + tag;

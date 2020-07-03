@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MachineTagMap {
+public class MachineTagAndCategoryMap {
     private static final Map<String, List<String>> map = new HashMap<>();
 
     public static void init(String type, String tagName){

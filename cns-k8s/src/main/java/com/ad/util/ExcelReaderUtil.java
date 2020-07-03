@@ -1,7 +1,7 @@
 package com.ad.util;
 
 import com.ad.entity.MachineDTO;
-import com.ad.entity.MachineTagMap;
+import com.ad.entity.MachineTagAndCategoryMap;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -89,13 +89,13 @@ public class ExcelReaderUtil {
                         throw new IllegalArgumentException("tag_config sheet DeviceType 存在空行");
                     }
 
-                    MachineTagMap.init(type,tag);
+                    MachineTagAndCategoryMap.init(type,tag);
                     break;
                 }
             }
         }
         System.out.println("parseTagConfigSheet end...");
-        System.out.println("总共统计到设备类型：" + MachineTagMap.getCount());
+        System.out.println("总共统计到设备类型：" + MachineTagAndCategoryMap.getCount());
     }
 
 
