@@ -102,16 +102,24 @@ public class IBMSServiceImpl implements IBMSService {
         final Set<Map.Entry<String, Set<String>>> entries = machineCategoryAndMachineTypeMap.entrySet();
         final Iterator<Map.Entry<String, Set<String>>> iterator = entries.iterator();
         int count = 0;
+        int hCount = 0;
         while (iterator.hasNext()){
             final Map.Entry<String, Set<String>> next = iterator.next();
             final String category = next.getKey();
             final Set<String> types = next.getValue();
             for(String machineType: types){
-                createMachineProfile(category,machineType);
-                count++;
+                final boolean hasExists = machineIService.hasExists(machineType);
+                if(!hasExists){
+                    createMachineProfile(category,machineType);
+                    count++;
+                }else {
+                    System.out.println("【" + category + "】系统下的设备类型【" + machineType + "】profile已经创建了");
+                    hCount++;
+                }
+
             }
         }
-        System.out.println("创建设备profile完毕，成功创建设备profile【" + count + "】个！");
+        System.out.println("创建设备profile完毕，成功创建设备profile【" + count + "】个！已经存在设备profile【" + count + "】个");
     }
 
     private void createMachineProfile(String category,String machineType) throws Exception {
