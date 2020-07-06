@@ -31,10 +31,10 @@ public class IMBSController {
     }
 
     @GetMapping("/init")
-    public String createIBMSTopoInfo(@RequestParam("ifNeedCreationMonitor") boolean ifNeedCreationMonitor) throws Exception {
+    public JSONObject createIBMSTopoInfo(@RequestParam("ifNeedCreationMonitor") boolean ifNeedCreationMonitor) throws Exception {
         System.out.println("ifNeedCreationMonitor = " + ifNeedCreationMonitor);
         final JSONObject result = ibmsService.initProfile(ifNeedCreationMonitor);
-        return result.toString();
+        return result;
     }
 
     @GetMapping("/profile")
