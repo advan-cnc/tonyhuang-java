@@ -55,6 +55,9 @@ public class IBMSServiceImpl implements IBMSService {
     @Value("${apm.version}")
     private String apmVersion;
 
+    @Value("${ibms.deviceCategory}")
+    private String deviceCategory;
+
 
     @Autowired
     private MachineIServiceImpl machineIService;
@@ -132,7 +135,7 @@ public class IBMSServiceImpl implements IBMSService {
         JSONObject profileParam = new JSONObject();
         profileParam.put("name", machineType);
         profileParam.put("type", "machine");
-        profileParam.put("category", category);
+        profileParam.put("category", deviceCategory);
         profileParam.put("description", "des");
         //可以读取配置项
         profileParam.put("version", "APM 1.1.55");
@@ -209,6 +212,12 @@ public class IBMSServiceImpl implements IBMSService {
     @Override
     public void createMachine(String targetMachineType,Integer parentId, String topoName,String floor) throws Exception {
         System.out.println("start createMachine ...");
+        final Object profile = machineIService.getProfile(targetMachineType);
+        if(Objects.isNull(profile)){
+            throw new IllegalStateException("当前设备类型没有创建profile");
+        }
+        JSONObject profileJson = (JSONObject)profile;
+        int modelId = profileJson.getIntValue("id");
         //读取文件
         List<MachineDTO> machineDTOList =  ExcelReaderUtil.parseDeviceConfigSheet(targetMachineType,topoName,floor);
         System.out.println("设备类型【" + targetMachineType + "】有【" + machineDTOList.size() + "】台设备");
@@ -228,7 +237,7 @@ public class IBMSServiceImpl implements IBMSService {
             machineJsonTemplate.put("name", machineName);
             machineJsonTemplate.put("parentId",parentId);
             machineJsonTemplate.put("topoName",topoName);
-            machineJsonTemplate.put("modelId",machineDTO.getModelId());
+            machineJsonTemplate.put("modelId", modelId);
             //绑定tag
             final JSONArray monitor = machineJsonTemplate.getJSONObject("initialFeature").getJSONArray("monitor");
 //            System.out.println("设备："+ machineName + "的initialFeature是" + monitor);

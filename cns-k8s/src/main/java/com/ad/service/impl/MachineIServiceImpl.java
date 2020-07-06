@@ -30,7 +30,6 @@ public class MachineIServiceImpl implements ProfileIService<JSONObject> {
         final ResultBody<?> resultBody = APMClientUtil.sendPostRequestToAPM(apmURl, param, JSONObject.class);
         final JSONObject data = (JSONObject)resultBody.getData();
         final Integer profileId = data.getInteger("id");
-        MachineUtil.setModelId(param.getString("name"), profileId);
         System.out.println("常见设备大类：【" + param.getString("category")
                 + "】下的设备类型：【" + param.getString("name") + "】的profile成功");
     }
@@ -42,5 +41,13 @@ public class MachineIServiceImpl implements ProfileIService<JSONObject> {
         final ResultBody<?> resultBody = sendGetRequestToAPM(apmURl, JSONObject.class);
         final Object resultBodyData = resultBody.getData();
         return !Objects.isNull(resultBodyData);
+    }
+
+    @Override
+    public Object getProfile(String profileName) throws Exception {
+        String apmURl = apmProtocol + apmHost + addProfilePath;
+        apmURl = apmURl + "?name=" + profileName;
+        final ResultBody<?> resultBody = sendGetRequestToAPM(apmURl, JSONObject.class);
+        return resultBody.getData();
     }
 }

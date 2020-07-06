@@ -134,13 +134,6 @@ public class ExcelReaderUtil {
             if(Objects.isNull(machineDTO)){
                 continue;
             }
-            //找到该设备的profileID
-            final String type = machineDTO.getType();
-            final Integer modelId = MachineUtil.getModelId(type);
-            if(modelId == null){
-                throw new IllegalArgumentException("设备类型" + type +"没有创建profile");
-            }
-            machineDTO.setModelId(modelId.intValue());
             rtv.add(machineDTO);
         }
         return rtv;
