@@ -28,7 +28,7 @@ public class ExcelReaderUtil {
     private static Workbook sheets;
 
     static {
-        Resource resource = new ClassPathResource("/ibms_config.xlsx");
+        Resource resource = new ClassPathResource("/ibms-config.xlsx");
         InputStream is = null;
         try {
             is = resource.getInputStream();

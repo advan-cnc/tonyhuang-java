@@ -8,6 +8,10 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
+import static com.ad.util.APMClientUtil.sendGetRequestToAPM;
+
 @Service
 public class MachineIServiceImpl implements ProfileIService<JSONObject> {
 
@@ -29,5 +33,14 @@ public class MachineIServiceImpl implements ProfileIService<JSONObject> {
         MachineUtil.setModelId(param.getString("name"), profileId);
         System.out.println("常见设备大类：【" + param.getString("category")
                 + "】下的设备类型：【" + param.getString("name") + "】的profile成功");
+    }
+
+    @Override
+    public boolean hasExists(String profileName) throws Exception{
+        String apmURl = apmProtocol + apmHost + addProfilePath;
+        apmURl = apmURl + "?name=" + profileName;
+        final ResultBody<?> resultBody = sendGetRequestToAPM(apmURl, JSONObject.class);
+        final Object resultBodyData = resultBody.getData();
+        return !Objects.isNull(resultBodyData);
     }
 }

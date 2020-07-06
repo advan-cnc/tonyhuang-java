@@ -1,6 +1,7 @@
 package com.ad.controller;
 
 import com.ad.service.IBMSService;
+import com.ad.service.impl.MachineIServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,10 @@ public class IMBSController {
 
     @Autowired
     private IBMSService ibmsService;
+
+    @Autowired
+    private MachineIServiceImpl machineIService;
+
     @PostMapping("/create/topo")
     public String createIBMSTopoInfo(@RequestParam("targetMachineType") String targetMachineType,
                                      @RequestParam("parentId") Integer parentId,
@@ -29,5 +34,11 @@ public class IMBSController {
         System.out.println("ifNeedCreationMonitor = " + ifNeedCreationMonitor);
         ibmsService.initProfile(ifNeedCreationMonitor);
         return "OK";
+    }
+
+    @GetMapping("/profile")
+    public String checkProfileHasExists(@RequestParam("typeName") String typeName) throws Exception {
+        final boolean b = machineIService.hasExists(typeName);
+        return "" + b;
     }
 }
