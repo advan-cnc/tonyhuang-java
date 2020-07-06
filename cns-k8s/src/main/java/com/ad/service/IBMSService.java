@@ -1,11 +1,13 @@
 package com.ad.service;
 
 
+import com.alibaba.fastjson.JSONObject;
+
 public interface IBMSService {
     /**
      * 根据ibms_config.xml创建profile
      */
-    void initProfile(boolean ifNeedCreationMonitor) throws Exception;
+    JSONObject initProfile(boolean ifNeedCreationMonitor) throws Exception;
 
     /**
      * 根据ibms_config.xml创建topo

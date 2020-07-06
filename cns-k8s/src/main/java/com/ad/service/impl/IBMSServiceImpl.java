@@ -60,8 +60,9 @@ public class IBMSServiceImpl implements IBMSService {
     private MachineIServiceImpl machineIService;
 
     @Override
-    public synchronized void  initProfile(boolean ifNeedCreationMonitor) throws Exception {
+    public synchronized JSONObject  initProfile(boolean ifNeedCreationMonitor) throws Exception {
         System.out.println("initProfile...");
+        JSONObject rtv = new JSONObject();
         //创建monitor
         //[{"kind":"monitor","name":"AHU1:AM","description":"手自動模式","type":"monitor","item":[]}]
         //https://api-apm-apmstage-eks005.bm.wise-paas.com.cn/property
@@ -89,19 +90,20 @@ public class IBMSServiceImpl implements IBMSService {
             }
         }
         System.out.println("创建monitor全部成功");
-        createProfilesInCategory();
-
+        createProfilesInCategory(rtv);
+        return rtv;
     }
 
 
     /**
      * 创建指定大类的所有设备的profile
      */
-    private void createProfilesInCategory() throws Exception {
+    private void createProfilesInCategory(JSONObject rtv) throws Exception {
         final Map<String, Set<String>> machineCategoryAndMachineTypeMap = getMachineCategoryAndMachineTypeMap();
+        rtv.put("machineCategoryAndMachineTypeMap",machineCategoryAndMachineTypeMap);
         final Set<Map.Entry<String, Set<String>>> entries = machineCategoryAndMachineTypeMap.entrySet();
         final Iterator<Map.Entry<String, Set<String>>> iterator = entries.iterator();
-        int count = 0;
+        int cCount = 0;
         int hCount = 0;
         while (iterator.hasNext()){
             final Map.Entry<String, Set<String>> next = iterator.next();
@@ -111,7 +113,7 @@ public class IBMSServiceImpl implements IBMSService {
                 final boolean hasExists = machineIService.hasExists(machineType);
                 if(!hasExists){
                     createMachineProfile(category,machineType);
-                    count++;
+                    cCount++;
                 }else {
                     System.out.println("【" + category + "】系统下的设备类型【" + machineType + "】profile已经创建了");
                     hCount++;
@@ -119,7 +121,10 @@ public class IBMSServiceImpl implements IBMSService {
 
             }
         }
-        System.out.println("创建设备profile完毕，成功创建设备profile【" + count + "】个！已经存在设备profile【" + count + "】个");
+        rtv.put("createProfileCount",cCount);
+        rtv.put("hasExistsProfileCount",hCount);
+        rtv.put("totalProfileCount",hCount + cCount);
+        System.out.println("创建设备profile完毕，成功创建设备profile【" + cCount + "】个！已经存在设备profile【" + hCount + "】个");
     }
 
     private void createMachineProfile(String category,String machineType) throws Exception {

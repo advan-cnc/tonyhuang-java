@@ -2,6 +2,7 @@ package com.ad.controller;
 
 import com.ad.service.IBMSService;
 import com.ad.service.impl.MachineIServiceImpl;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,8 +33,8 @@ public class IMBSController {
     @GetMapping("/init")
     public String createIBMSTopoInfo(@RequestParam("ifNeedCreationMonitor") boolean ifNeedCreationMonitor) throws Exception {
         System.out.println("ifNeedCreationMonitor = " + ifNeedCreationMonitor);
-        ibmsService.initProfile(ifNeedCreationMonitor);
-        return "OK";
+        final JSONObject result = ibmsService.initProfile(ifNeedCreationMonitor);
+        return result.toString();
     }
 
     @GetMapping("/profile")
