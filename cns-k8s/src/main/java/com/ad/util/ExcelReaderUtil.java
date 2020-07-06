@@ -93,11 +93,11 @@ public class ExcelReaderUtil {
                 if(i==2){
                     tag = value;
                     if (StringUtils.isEmpty(category) || StringUtils.isEmpty(type)){
-                        continue;
-//                        throw new IllegalArgumentException("tag_config sheet System or DeviceType 存在空列,行数为：" + rowNum);
+                        throw new IllegalArgumentException("tag_config sheet System or DeviceType 存在空列,行数为：" + rowNum);
                     }
 
                     MachineTagAndCategoryMap.initMachineTypeAndTagListMap(type, tag);
+                    initMachineCategoryAndMachineTypeMap(category, type);
                     break;
                 }
             }
@@ -157,30 +157,30 @@ public class ExcelReaderUtil {
         check(sheet);
         return sheet;
     }
-    public static void parseDeviceConfigSheet(){
-        System.out.println("parseDeviceConfigSheet start ...");
-        // 解析sheet
-        Sheet deviceConfig = getSheet("device_config");
-        // 解析每一行的数据，构造数据对象
-        int firstRowNum = deviceConfig.getFirstRowNum();
-        int rowStart = firstRowNum + 1;
-        int rowEnd = deviceConfig.getPhysicalNumberOfRows();
-        for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
-            Row row = deviceConfig.getRow(rowNum);
-            if (null == row) {
-                continue;
-            }
-            //只转换那些符合条件的行
-            MachineDTO machineDTO = convertRowToData(row,rowNum,null,null,null);
-            if(Objects.isNull(machineDTO)){
-                continue;
-//                throw new IllegalArgumentException("初始化失败，表格中的device_config sheet的第【"+ rowNum+ "】数据有问题");
-            }
-            initMachineCategoryAndMachineTypeMap(machineDTO.getCategory(),machineDTO.getType());
-        }
-        System.out.println("parseDeviceConfigSheet end ...");
-        System.out.println("MachineCategoryAndMachineTypeMap = " + getMachineCategoryAndMachineTypeMap());
-    }
+//    public static void parseDeviceConfigSheet(){
+//        System.out.println("parseDeviceConfigSheet start ...");
+//        // 解析sheet
+//        Sheet deviceConfig = getSheet("device_config");
+//        // 解析每一行的数据，构造数据对象
+//        int firstRowNum = deviceConfig.getFirstRowNum();
+//        int rowStart = firstRowNum + 1;
+//        int rowEnd = deviceConfig.getPhysicalNumberOfRows();
+//        for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
+//            Row row = deviceConfig.getRow(rowNum);
+//            if (null == row) {
+//                continue;
+//            }
+//            //只转换那些符合条件的行
+//            MachineDTO machineDTO = convertRowToData(row,rowNum,null,null,null);
+//            if(Objects.isNull(machineDTO)){
+//                continue;
+////                throw new IllegalArgumentException("初始化失败，表格中的device_config sheet的第【"+ rowNum+ "】数据有问题");
+//            }
+//            initMachineCategoryAndMachineTypeMap(machineDTO.getCategory(),machineDTO.getType());
+//        }
+//        System.out.println("parseDeviceConfigSheet end ...");
+//        System.out.println("MachineCategoryAndMachineTypeMap = " + getMachineCategoryAndMachineTypeMap());
+//    }
 
     /**
      * 将单元格内容转换为字符串
