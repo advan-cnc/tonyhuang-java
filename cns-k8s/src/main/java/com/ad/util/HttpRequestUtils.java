@@ -5,9 +5,16 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 public class HttpRequestUtils {
+
+    private static SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+    static {
+        factory.setConnectTimeout(300*1000);
+        factory.setReadTimeout(1000*300);
+    }
     public static <T> ResultBody<T> get(String url, HttpHeaders headers, Class<T> clazz) throws Exception {
         return getObjectResultBody(url, HttpMethod.GET, headers,null,clazz);
     }
@@ -24,7 +31,7 @@ public class HttpRequestUtils {
             String url,HttpMethod method,HttpHeaders headers,String reqJsonString,Class<T> clazz) throws Exception {
         System.out.println("请求的url= " + url);
         System.out.println("请求的para= " + reqJsonString);
-        RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate(factory);
         ResultBody<Object> requestResult = new ResultBody<Object>();
         HttpEntity<String> request = new HttpEntity<String>(reqJsonString, headers);
         if(reqJsonString == null){

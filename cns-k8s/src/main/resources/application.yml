@@ -22,3 +22,4 @@ ibms:
   groupName: linkou
   deviceName: AA
   deviceType: OPCUA
+  deviceCategory: ibmsMachineProfile
